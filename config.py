@@ -26,20 +26,21 @@ JOB_SPEC = {
                     {
                         "name": "EKship",
                         "image": "mrphys/mfsimage:ff_for_tests",
-                        "env": [
-                            {"name": "fileName",
-                             "value": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root"},
-                            {"name": "mfirstEvent",
-                             "value": "0"},
-                            {"name": "nEvents",
-                             "value": "10"},
-                            {"name": "muShieldDesign",
-                             "value": "9"},
-                            {"name": "jName",
-                             "value": "testJob"},
-                            {"name": "jNumber",
-                             "value": "1"},
-                        ],
+                        # Set env in the code
+                        # "env": [
+                        #     {"name": "fileName",
+                        #      "value": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root"},
+                        #     {"name": "mfirstEvent",
+                        #      "value": "0"},
+                        #     {"name": "nEvents",
+                        #      "value": "10"},
+                        #     {"name": "muShieldDesign",
+                        #      "value": "9"},
+                        #     {"name": "jName",
+                        #      "value": "testJob"},
+                        #     {"name": "jNumber",
+                        #      "value": "1"},
+                        # ],
                         "resources": {
                             "requests": {
                                 "memory": "6Gi",
