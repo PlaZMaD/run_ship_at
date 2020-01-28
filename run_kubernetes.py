@@ -44,16 +44,16 @@ def to_kube_env(envs):
     return kube_env
 
 
-def run_kube_job(envs: dict, exp_folder: str, i: str):
-    global JOB_SPEC
+def run_kube_job(job_spec, envs: dict, exp_folder: str, i: str):
     envs = to_kube_env(envs)
-    JOB_SPEC = deepcopy(JOB_SPEC)
+    job_spec = deepcopy(job_spec)
     job_uuid: str = f"EK-{uuid.uuid4()[:6]}-{exp_folder}-{i}"
-    JOB_SPEC["metadata"]["name"] = JOB_SPEC["metadata"]["name"].format(job_uuid)
+    job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
     output_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{i}"
-    JOB_SPEC["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = output_folder
+    job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = output_folder
 
+    job = pykube.Job(api, job_spec)
     # container_group_name, logs = aci_worker.run_task_based_container(container_image_name=container_image_name,
     #                       #command=command,
     #                       cpu=1.0,
@@ -104,7 +104,8 @@ for i in range(100, 200):
             "muShieldDesign": 9,
             "jName": "coMagnet",
             "jNumber": i + 1}
-    proc = Process(target=run_kube_job, args=(envs, exp_folder, str(i)))
+    job_spec = deepcopy(JOB_SPEC)
+    proc = Process(target=run_kube_job, args=(job_spec, envs, exp_folder, str(i)))
     procs.append(proc)
     proc.start()
 for proc in procs:
