@@ -10,6 +10,8 @@ DOCKER_OUTPUT_DIRECTORY = '/output'
 HOST_SAMPLE_DIRECTORY = '/local/ship/background_2018'
 DOCKER_SAMPLE_DIRECTORY = '/sample'
 
+TIMEOUT = 60*60*3
+
 
 JOB_SPEC = {
     "apiVersion": "batch/v1",

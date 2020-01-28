@@ -1,5 +1,7 @@
 import uuid
 import datetime
+import requests
+import traceback
 from multiprocessing import Process
 from copy import deepcopy
 
@@ -44,28 +46,33 @@ def to_kube_env(envs):
     return kube_env
 
 
-def run_kube_job(job_spec, envs: dict, exp_folder: str, i: str):
-    envs = to_kube_env(envs)
-    job_spec = deepcopy(job_spec)
+def run_kube_job(job_spec: dict,
+                 envs: dict,
+                 exp_folder: str,
+                 i: str,
+                 timeout: int) -> str:
     job_uuid: str = f"EK-{uuid.uuid4()[:6]}-{exp_folder}-{i}"
     job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
     output_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{i}"
     job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = output_folder
 
+    job_spec["spec"]["template"]["spec"]["containers"][0]["env"] = to_kube_env(envs)
+
+
     job = pykube.Job(api, job_spec)
-    # container_group_name, logs = aci_worker.run_task_based_container(container_image_name=container_image_name,
-    #                       #command=command,
-    #                       cpu=1.0,
-    #                       memory_in_gb=8,
-    #                       gpu_count=0,
-    #                       volume_mount_path=volume_mount_path,
-    #                       envs=envs,
-    #                       timeout=28800,
-    #                       afs_name=afs_name,
-    #                       afs_key=afs_key,
-    #                       afs_share=afs_share,
-    #                       afs_mount_subpath='')
+    job.create()
+    start = datetime.datetime.now()
+    while (datetime.datetime.now() - start).seconds < timeout:
+        try:
+            job.reload()
+            status = status_checker(job=job)
+            if status == "succeeded":
+                print(f"JOB: {i} finished")
+                break
+        except requests.exceptions.HTTPError as exc:
+            print(f"{exc} {traceback.print_exc()}")
+    return status
 
 
 fileLen = {0: 13450391, 16000: 6242698, 66000: 6112412, 27000: 6238416,
@@ -105,7 +112,11 @@ for i in range(100, 200):
             "jName": "coMagnet",
             "jNumber": i + 1}
     job_spec = deepcopy(JOB_SPEC)
-    proc = Process(target=run_kube_job, args=(job_spec, envs, exp_folder, str(i)))
+    proc = Process(target=run_kube_job, args=(job_spec,
+                                              envs,
+                                              exp_folder,
+                                              str(i),
+                                              TIMEOUT))
     procs.append(proc)
     proc.start()
 for proc in procs:
