@@ -4,7 +4,7 @@
 # parameters of server
 K8S_PROXY = 'http://127.0.0.1:8002'
 
-HOST_OUTPUT_DIRECTORY = '/mnt/shipfs'
+HOST_OUTPUT_DIRECTORY = '/mnt/shipfs/EK_output'
 DOCKER_OUTPUT_DIRECTORY = '/output'
 
 HOST_SAMPLE_DIRECTORY = '/local/ship/background_2018'
@@ -15,6 +15,7 @@ JOB_SPEC = {
     "apiVersion": "batch/v1",
     "kind": "Job",
     "metadata": {
+        # Fill in the python script
         "name": "EKship-job-{}"
     },
     "spec": {
@@ -69,7 +70,8 @@ JOB_SPEC = {
                     {
                         "name": "output",
                         "hostPath": {
-                            "path": "{}/{}",
+                            # Fill in the python script
+                            "path": "",
                             "type": "Directory"
                         }
                     },

@@ -1,4 +1,5 @@
 import uuid
+import datetime
 from multiprocessing import Process
 from copy import deepcopy
 
@@ -24,6 +25,9 @@ def status_checker(job):
         return 'failed'
     return 'wait'
 
+def get_experiment_folder() -> str:
+    return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
 
 def job_status(jobs_status):
     if 'failed' in jobs_status:
@@ -40,15 +44,15 @@ def to_kube_env(envs):
     return kube_env
 
 
-def run_kube_job(envs):
+def run_kube_job(envs: dict, exp_folder: str, i: str):
     global JOB_SPEC
     envs = to_kube_env(envs)
     JOB_SPEC = deepcopy(JOB_SPEC)
-    job_uuid: str = str(uuid.uuid4())
+    job_uuid: str = f"EK-{uuid.uuid4()[:6]}-{exp_folder}-{i}"
     JOB_SPEC["metadata"]["name"] = JOB_SPEC["metadata"]["name"].format(job_uuid)
-    out_path = JOB_SPEC["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"]
-    out_path = out_path.format(HOST_OUTPUT_DIRECTORY, job_uuid)
-    JOB_SPEC["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = out_path
+
+    output_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{i}"
+    JOB_SPEC["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = output_folder
 
     # container_group_name, logs = aci_worker.run_task_based_container(container_image_name=container_image_name,
     #                       #command=command,
@@ -93,13 +97,14 @@ chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
 
 for i in range(100, 200):
+    exp_folder = get_experiment_folder()
     envs = {"fileName": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
             "mfirstEvent": startPoints[i],
             "nEvents": chunkLength[i],
             "muShieldDesign": 9,
             "jName": "coMagnet",
             "jNumber": i + 1}
-    proc = Process(target=run_kube_job, args=(envs,))
+    proc = Process(target=run_kube_job, args=(envs, exp_folder, str(i)))
     procs.append(proc)
     proc.start()
 for proc in procs:
