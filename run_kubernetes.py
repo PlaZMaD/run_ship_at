@@ -5,8 +5,9 @@ import traceback
 from multiprocessing import Process
 from copy import deepcopy
 
-from config import *
 import pykube
+
+from config import *
 
 fileN = 2
 jobsNum = 200
@@ -15,7 +16,7 @@ api = pykube.HTTPClient(config_k8s)
 api.timeout = 1e6
 
 
-def status_checker(job):
+def status_checker(job) -> str:
     active = job.obj['status'].get('active', 0)
     succeeded = job.obj['status'].get('succeeded', 0)
     failed = job.obj['status'].get('failed', 0)
@@ -42,7 +43,7 @@ def job_status(jobs_status):
 def to_kube_env(envs):
     kube_env = []
     for k, v in envs.items():
-        kube_env.append({"name": k, "value": v})
+        kube_env.append({"name": str(k), "value": str(v)})
     return kube_env
 
 
@@ -51,7 +52,7 @@ def run_kube_job(job_spec: dict,
                  exp_folder: str,
                  i: str,
                  timeout: int) -> str:
-    job_uuid: str = f"EK-{uuid.uuid4()[:6]}-{exp_folder}-{i}"
+    job_uuid: str = f"ek-{str(uuid.uuid4())[:6]}-{exp_folder}-{i}"
     job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
     output_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{i}"
@@ -61,17 +62,22 @@ def run_kube_job(job_spec: dict,
 
 
     job = pykube.Job(api, job_spec)
+    print(job_spec["spec"]["template"]["spec"]["containers"][0]["env"])
     job.create()
     start = datetime.datetime.now()
+    status = "start"
     while (datetime.datetime.now() - start).seconds < timeout:
         try:
             job.reload()
             status = status_checker(job=job)
             if status == "succeeded":
-                print(f"JOB: {i} finished")
-                break
+                print(f"JOB: {job_uuid} finished")
+                job.delete()
+                return status
         except requests.exceptions.HTTPError as exc:
             print(f"{exc} {traceback.print_exc()}")
+    print(f"Timeout {timeout} was exceeded. Deleting the job {job_uuid}")
+    job.delete()
     return status
 
 
@@ -103,8 +109,7 @@ startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
 chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
 
-for i in range(100, 200):
-    exp_folder = get_experiment_folder()
+for i in range(100, 101):
     envs = {"fileName": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
             "mfirstEvent": startPoints[i],
             "nEvents": chunkLength[i],
@@ -114,7 +119,7 @@ for i in range(100, 200):
     job_spec = deepcopy(JOB_SPEC)
     proc = Process(target=run_kube_job, args=(job_spec,
                                               envs,
-                                              exp_folder,
+                                              get_experiment_folder(),
                                               str(i),
                                               TIMEOUT))
     procs.append(proc)

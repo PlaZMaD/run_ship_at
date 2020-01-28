@@ -18,7 +18,7 @@ JOB_SPEC = {
     "kind": "Job",
     "metadata": {
         # Fill in the python script
-        "name": "EKship-job-{}"
+        "name": "{}"
     },
     "spec": {
         # Don't forget about this disabled option
@@ -27,7 +27,7 @@ JOB_SPEC = {
             "spec": {
                 "containers": [
                     {
-                        "name": "EKship",
+                        "name": "ekship",
                         "image": "mrphys/mfsimage:ff_for_tests",
                         # Set env in the code
                         # "env": [
@@ -62,7 +62,7 @@ JOB_SPEC = {
                             {
                                 "mountPath": DOCKER_SAMPLE_DIRECTORY,
                                 "name": "muonsample",
-                                "readOnly": "true"
+                                # "readOnly": true
                             }
                         ]
                     }
