@@ -1,3 +1,4 @@
+import os
 import uuid
 import datetime
 import requests
@@ -108,8 +109,11 @@ k = jobsNum
 startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
 chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
+exp_folder = get_experiment_folder()
 
 for i in range(100, 101):
+    job_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{str(i)}"
+    os.makedirs(job_folder)
     envs = {"fileName": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
             "mfirstEvent": startPoints[i],
             "nEvents": chunkLength[i],
@@ -119,7 +123,7 @@ for i in range(100, 101):
     job_spec = deepcopy(JOB_SPEC)
     proc = Process(target=run_kube_job, args=(job_spec,
                                               envs,
-                                              get_experiment_folder(),
+                                              job_folder,
                                               str(i),
                                               TIMEOUT))
     procs.append(proc)
