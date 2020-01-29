@@ -71,6 +71,7 @@ def run_kube_job(job_spec: dict,
     job.create()
     start = datetime.datetime.now()
     status = "start"
+    logging.info(f"JOB: {job_uuid} was started. Tag is {job_tag}")
     while (datetime.datetime.now() - start).seconds < timeout:
         try:
             job.reload()
