@@ -47,7 +47,7 @@ def job_status(jobs_status):
     return 'wait'
 
 
-def to_kube_env(envs):
+def to_kube_env(envs) -> list:
     kube_env = []
     for k, v in envs.items():
         kube_env.append({"name": str(k), "value": str(v)})
@@ -57,9 +57,9 @@ def to_kube_env(envs):
 def run_kube_job(job_spec: dict,
                  envs: dict,
                  job_folder: str,
-                 i: str,
                  timeout: int) -> str:
-    job_uuid: str = f"ek-{str(uuid.uuid4())[:6]}-{exp_folder}-{i}"
+    job_tag = "-".join(job_folder.split("/")[-2:])
+    job_uuid: str = f"ek-{str(uuid.uuid4())[:5]}-{job_tag}"
     job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
     job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = job_folder
@@ -68,7 +68,6 @@ def run_kube_job(job_spec: dict,
 
 
     job = pykube.Job(api, job_spec)
-    print(job_spec["spec"]["template"]["spec"]["containers"][0]["env"])
     job.create()
     start = datetime.datetime.now()
     status = "start"
@@ -130,7 +129,6 @@ for i in range(100, 102):
     proc = Process(target=run_kube_job, args=(job_spec,
                                               envs,
                                               job_folder,
-                                              str(i),
                                               TIMEOUT))
     procs.append(proc)
     proc.start()
