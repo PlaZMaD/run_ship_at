@@ -1,14 +1,20 @@
 import os
 import uuid
+import logging
 import datetime
 import requests
 import traceback
-from multiprocessing import Process
+from pathlib import Path
 from copy import deepcopy
+from multiprocessing import Process
+
 
 import pykube
 
 from config import *
+
+
+logging.basicConfig(level=logging.INFO)
 
 fileN = 2
 jobsNum = 200
@@ -71,7 +77,7 @@ def run_kube_job(job_spec: dict,
             job.reload()
             status = status_checker(job=job)
             if status == "succeeded":
-                print(f"JOB: {job_uuid} finished")
+                logging.info(f"JOB: {job_uuid} finished. Output in {job_folder}")
                 job.delete()
                 return status
         except requests.exceptions.HTTPError as exc:
@@ -110,9 +116,10 @@ chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
 exp_folder = get_experiment_folder()
 
-for i in range(100, 101):
-    job_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{str(i)}"
+for i in range(100, 102):
+    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder / str(i))
     os.makedirs(job_folder)
+    logging.info(f"Job folder {job_folder} is created")
     envs = {"fileName": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
             "mfirstEvent": startPoints[i],
             "nEvents": chunkLength[i],
