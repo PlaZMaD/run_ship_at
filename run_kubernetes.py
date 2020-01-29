@@ -80,12 +80,12 @@ def run_kube_job(job_spec: dict,
             status = status_checker(job=job)
             if status == "succeeded":
                 logging.info(f"JOB: {job_uuid} finished. Output in {job_folder}")
-                job.delete()
+                job.delete("Foreground")
                 return status
         except requests.exceptions.HTTPError as exc:
             print(f"{exc} {traceback.print_exc()}")
     print(f"Timeout {timeout} was exceeded. Deleting the job {job_uuid}")
-    job.delete()
+    job.delete("Foreground")
     return status
 
 
