@@ -7,6 +7,7 @@ K8S_PROXY = 'http://127.0.0.1:8002'
 HOST_OUTPUT_DIRECTORY = '/mnt/shipfs/EK_output'
 DOCKER_OUTPUT_DIRECTORY = '/output'
 
+# HOST_SAMPLE_DIRECTORY - local folder in the cluster
 HOST_SAMPLE_DIRECTORY = '/local/ship/background_2018'
 DOCKER_SAMPLE_DIRECTORY = '/sample'
 
