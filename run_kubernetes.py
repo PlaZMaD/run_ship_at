@@ -1,5 +1,6 @@
 import os
 import uuid
+import time
 import logging
 import datetime
 import requests
@@ -74,6 +75,7 @@ def run_kube_job(job_spec: dict,
     logging.info(f"JOB: {job_uuid} was started. Tag is {job_tag}")
     while (datetime.datetime.now() - start).seconds < timeout:
         try:
+            time.sleep(10)
             job.reload()
             status = status_checker(job=job)
             if status == "succeeded":
