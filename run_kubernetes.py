@@ -50,14 +50,13 @@ def to_kube_env(envs):
 
 def run_kube_job(job_spec: dict,
                  envs: dict,
-                 exp_folder: str,
+                 job_folder: str,
                  i: str,
                  timeout: int) -> str:
     job_uuid: str = f"ek-{str(uuid.uuid4())[:6]}-{exp_folder}-{i}"
     job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
-    output_folder = f"{HOST_OUTPUT_DIRECTORY}/{exp_folder}/{i}"
-    job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = output_folder
+    job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = job_folder
 
     job_spec["spec"]["template"]["spec"]["containers"][0]["env"] = to_kube_env(envs)
 
