@@ -19,14 +19,15 @@ You have to make sure that there is mounted Azure File Storage on the
     `JOB_SPEC` - check this
     
 4. Launch - `python run_kubernetes.py`
-5. Monitor your Jobs with `kubectl` utility:    
-    pod_name = job_name - random[:5]
+5. Every Kubernetes Job create 1 Kubernetes Pod. Monitor your Jobs with `kubectl` utility:    
+    <pod_name> = <job_name>-<random>[:5]
     
-        
-    kubectl --server=127.0.0.1:8002 get jobs      
-    kubectl --server=127.0.0.1:8002 get pods    
-    kubectl --server=127.0.0.1:8002 describe pod <pod_name>    
-    kubectl --server=127.0.0.1:8002 logs <pod_name>
+```bash
+kubectl --server=127.0.0.1:8002 get jobs      
+kubectl --server=127.0.0.1:8002 get pods    
+kubectl --server=127.0.0.1:8002 describe pod <pod_name>    
+kubectl --server=127.0.0.1:8002 logs <pod_name>
+```
 
 # run_ship_at
 scripts to run fs
