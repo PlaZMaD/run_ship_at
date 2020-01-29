@@ -47,7 +47,7 @@ def job_status(jobs_status):
     return 'wait'
 
 
-def to_kube_env(envs):
+def to_kube_env(envs) -> list:
     kube_env = []
     for k, v in envs.items():
         kube_env.append({"name": str(k), "value": str(v)})
@@ -68,7 +68,6 @@ def run_kube_job(job_spec: dict,
 
 
     job = pykube.Job(api, job_spec)
-    print(job_spec["spec"]["template"]["spec"]["containers"][0]["env"])
     job.create()
     start = datetime.datetime.now()
     status = "start"
