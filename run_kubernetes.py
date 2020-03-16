@@ -17,7 +17,7 @@ from config import *
 
 logging.basicConfig(level=logging.INFO)
 
-fileN = 2
+fileN = 0
 jobsNum = 200
 config_k8s = pykube.KubeConfig.from_url(K8S_PROXY)
 api = pykube.HTTPClient(config_k8s)
@@ -113,20 +113,21 @@ nEvents_in = fileLen[fileN * 1000]
 # nEvents_in = 100
 n = nEvents_in
 k = jobsNum
+baseName = "baseMaster"
 startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
 chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
 exp_folder = get_experiment_folder()
 
-for i in range(100, 102):
-    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder / str(i))
+for i in range(200):
+    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder / baseName / str(fileN) / str(i))
     os.makedirs(job_folder)
     logging.info(f"Job folder {job_folder} is created")
-    envs = {"fileName": "pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
+    envs = {"fileName": fileN, #"pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
             "mfirstEvent": startPoints[i],
             "nEvents": chunkLength[i],
             "muShieldDesign": 9,
-            "jName": "coMagnet",
+            "jName": "baseName",
             "jNumber": i + 1}
     job_spec = deepcopy(JOB_SPEC)
     proc = Process(target=run_kube_job, args=(job_spec,
