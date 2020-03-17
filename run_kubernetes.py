@@ -118,9 +118,10 @@ startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
 chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
 chunkLength[-1] = chunkLength[-1] - 1
 exp_folder = get_experiment_folder()
-
-for i in range(200):
-    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder / baseName / str(fileN) / str(i))
+Failed = [99, 72, 54, 25, 171, 17, 167, 103]
+Failed = [f-1 for f in Failed]
+for i in range(2): #Failed:	#range(200):
+    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder /str(i))
     os.makedirs(job_folder)
     logging.info(f"Job folder {job_folder} is created")
     envs = {"fileName": fileN, #"pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",

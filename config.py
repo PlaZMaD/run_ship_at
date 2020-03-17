@@ -29,7 +29,7 @@ JOB_SPEC = {
                 "containers": [
                     {
                         "name": "ekship",
-                        "image": "mrphys/mfsimage:master_base",
+                        "image": "mrphys/mfsimage:master_base_5",
                         # Set env in the code
                         # "env": [
                         #     {"name": "fileName",
