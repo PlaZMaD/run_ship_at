@@ -71,27 +71,27 @@ JOB_SPEC = {
                 "hostNetwork": "true",
                 "restartPolicy": "Never",
                 "volumes": [
-                    {
-                        "name": "output",
-                        "hostPath": {
-                            # Fill in the python script
-                            "path": "",
-                            "type": "Directory"
-                        }
-                    },
-                    # Use this with azcopy
-                    {
-                        "name": "muonsample",
-                        "emptyDir": {}
-                    },
                     # Use this with mount
                     # {
-                    #     "name": "muonsample",
+                    #     "name": "output",
                     #     "hostPath": {
-                    #         "path": HOST_SAMPLE_DIRECTORY,
+                    #         # Fill in the python script
+                    #         "path": "",
                     #         "type": "Directory"
                     #     }
-                    # }
+                    # },
+                    # Use this with azcopy
+                    {
+                        "name": "output",
+                        "emptyDir": {}
+                    },
+                    {
+                        "name": "muonsample",
+                        "hostPath": {
+                            "path": HOST_SAMPLE_DIRECTORY,
+                            "type": "Directory"
+                        }
+                    }
                 ]
             }
         },
