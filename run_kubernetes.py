@@ -132,8 +132,8 @@ for i in range(2): #Failed:	#range(200):
             "muShieldDesign": 9,
             "jName": "baseName",
             "jNumber": i + 1,
-            "AZUSE_INPUT_DATA_URI": AZURE_DATA_URI.format(job_folder),
-            "AZUSE_OUTPUT_DATA_URI": AZURE_DATA_URI.format(job_folder + "/output")}
+            "AZURE_INPUT_DATA_URI": AZURE_DATA_URI.format(job_folder),
+            "AZURE_OUTPUT_DATA_URI": AZURE_DATA_URI.format(job_folder + "/output")}
     job_spec = deepcopy(JOB_SPEC)
     proc = Process(target=run_kube_job, args=(job_spec,
                                               envs,
