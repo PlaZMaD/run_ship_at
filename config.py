@@ -63,7 +63,7 @@ JOB_SPEC = {
                             {
                                 "mountPath": DOCKER_SAMPLE_DIRECTORY,
                                 "name": "muonsample",
-                                # "readOnly": true
+                                # "readOnly": "true"
                             }
                         ]
                     }
