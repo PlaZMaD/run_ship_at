@@ -2,8 +2,10 @@
 #mkdir -p /output/$jName/$fileName/$jNumber
 if [ ! -z "$AZURE_INPUT_DATA_URI" ]
 then
-    echo "AZURE_DATA_URI is given. Starting downloading data from $AZURE_INPUT_DATA_URI..."
+    echo "AZURE_INPUT_DATA_URI is given. Starting downloading data from $AZURE_INPUT_DATA_URI..."
     azcopy cp "$AZURE_INPUT_DATA_URI" "/sample" --recursive
+else
+    echo "$AZURE_INPUT_DATA_URI wasn't given given"
 fi
 
 CN=$((fileName*1000))
@@ -18,6 +20,8 @@ if [ ! -z "$AZURE_OUTPUT_DATA_URI" ]
 then
     echo "Starting uploading results to $AZURE_OUTPUT_DATA_URI..."
     azcopy cp "/tmp/$jName/$fileName/$jNumber/*" "$AZURE_OUTPUT_DATA_URI" --recursive
+else
+    echo "AZURE_OUTPUT_DATA_URI wasn't given given"
 fi
 
 
