@@ -1,9 +1,5 @@
-FROM  shir994/fairship:shield_opt_v3
-#FROM olantwin/ship-base:200213-2018
-RUN rm -rf /FairShip
+FROM olantwin/ship-base:191114
 RUN git clone   https://github.com/ShipSoft/FairShip.git
-#RUN git clone    https://github.com/ShipSoft/FairShip.git
-COPY FairShip/macro/run_simScript.py /FairShip/macro/run_simScript.py
 RUN aliBuild -c shipdist/ --defaults fairship build FairShip --no-local ROOT
 COPY run_jobs.sh /scripts/run_jobs.sh
 COPY azcopy /bin/azcopy

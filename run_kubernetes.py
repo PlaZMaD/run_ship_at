@@ -17,13 +17,13 @@ from config import *
 
 logging.basicConfig(level=logging.INFO)
 
-fileN = 0
+fileNs = [0]
 jobsNum = 200
 config_k8s = pykube.KubeConfig.from_url(K8S_PROXY)
 api = pykube.HTTPClient(config_k8s)
 api.timeout = 1e6
 AZURE_DATA_URI = os.environ["AZURE_DATA_URI"]
-
+baseName = "baseMaster"
 
 def status_checker(job) -> str:
     active = job.obj['status'].get('active', 0)
@@ -110,36 +110,36 @@ fileLen = {0: 13450391, 16000: 6242698, 66000: 6112412, 27000: 6238416,
            65000: 6239301, 37000: 6238285, 46000: 6240834}
 
 procs = []
-
-nEvents_in = fileLen[fileN * 1000]
-# nEvents_in = 100
-n = nEvents_in
-k = jobsNum
-baseName = "baseMaster"
-startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
-chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
-chunkLength[-1] = chunkLength[-1] - 1
-exp_folder = get_experiment_folder()
-Failed = [99, 72, 54, 25, 171, 17, 167, 103]
-Failed = [f-1 for f in Failed]
-for i in range(2): #Failed:	#range(200):
-    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder /str(i))
-    os.makedirs(job_folder)
-    logging.info(f"Job folder {job_folder} is created")
-    envs = {"fileName": fileN, #"pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
-            "mfirstEvent": startPoints[i],
-            "nEvents": chunkLength[i],
-            "muShieldDesign": 9,
-            "jName": "baseName",
-            "jNumber": i + 1,
-            "AZURE_INPUT_DATA_URI": AZURE_DATA_URI.format(job_folder),
-            "AZURE_OUTPUT_DATA_URI": AZURE_DATA_URI.format(job_folder + "/output")}
-    job_spec = deepcopy(JOB_SPEC)
-    proc = Process(target=run_kube_job, args=(job_spec,
-                                              envs,
-                                              job_folder,
-                                              TIMEOUT))
-    procs.append(proc)
-    proc.start()
+for fileN in fileNs:
+	nEvents_in = fileLen[fileN * 1000]
+	# nEvents_in = 100
+	n = nEvents_in
+	k = jobsNum
+	startPoints = [i * (n // k) + min(i, n % k) for i in range(k)]
+	chunkLength = [(n // k) + (1 if i < (n % k) else 0) for i in range(k)]
+	chunkLength[-1] = chunkLength[-1] - 1
+	exp_folder = get_experiment_folder()
+	Failed = [99, 72, 54, 25, 171, 17, 167, 103]
+	Failed = [f-1 for f in Failed]
+	for i in range(2): #Failed:	#range(200):
+	    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder /str(i))
+	    os.makedirs(job_folder)
+	    logging.info(f"Job folder {job_folder} is created")
+	    envs = {"fileName": fileN, #"pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
+		    "mfirstEvent": startPoints[i],
+		    "nEvents": chunkLength[i],
+		    "muShieldDesign": 9,
+		    "jName": "baseName",
+		    "jNumber": i + 1,
+		    "AZURE_INPUT_DATA_URI": AZURE_DATA_URI.format(job_folder),
+		    "AZURE_OUTPUT_DATA_URI": AZURE_DATA_URI.format(job_folder + "/output"),
+                    "opts": "--stepMuonShield"}
+	    job_spec = deepcopy(JOB_SPEC)
+	    proc = Process(target=run_kube_job, args=(job_spec,
+						      envs,
+						      job_folder,
+						      TIMEOUT))
+	    procs.append(proc)
+	    proc.start()
 for proc in procs:
     proc.join()
