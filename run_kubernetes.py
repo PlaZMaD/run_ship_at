@@ -122,7 +122,7 @@ for fileN in fileNs:
 	Failed = [99, 72, 54, 25, 171, 17, 167, 103]
 	Failed = [f-1 for f in Failed]
 	for i in range(2): #Failed:	#range(200):
-	    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder /str(i))
+	    job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder / baseName / str(fileN) / str(i)) #job_folder = str(Path(HOST_OUTPUT_DIRECTORY) / exp_folder /str(i))
 	    os.makedirs(job_folder)
 	    logging.info(f"Job folder {job_folder} is created")
 	    envs = {"fileName": fileN, #"pythia8_Geant4_10.0_withCharmandBeauty0_mu.root",
