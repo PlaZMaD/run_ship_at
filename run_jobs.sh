@@ -21,7 +21,7 @@ then
     echo "Starting uploading results to $AZURE_OUTPUT_DATA_URI..."
     azcopy cp "/tmp/$jName/$fileName/$jNumber/*" "$AZURE_OUTPUT_DATA_URI" --recursive
 else
-    echo "AZURE_OUTPUT_DATA_URI wasn't given given"
+    echo "AZURE_OUTPUT_DATA_URI wasn't given"
 fi
 
 
