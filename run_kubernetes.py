@@ -22,6 +22,7 @@ jobsNum = 200
 config_k8s = pykube.KubeConfig.from_url(K8S_PROXY)
 api = pykube.HTTPClient(config_k8s)
 api.timeout = 1e6
+AZURE_DATA_URI = os.environ["AZURE_DATA_URI"]
 
 
 def status_checker(job) -> str:
@@ -63,7 +64,8 @@ def run_kube_job(job_spec: dict,
     job_uuid: str = f"ek-{str(uuid.uuid4())[:5]}-{job_tag}"
     job_spec["metadata"]["name"] = job_spec["metadata"]["name"].format(job_uuid)
 
-    job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = job_folder
+    # DEPRECATED FOR USAGE WITH AZCOPY
+    # job_spec["spec"]["template"]["spec"]["volumes"][0]["hostPath"]["path"] = job_folder
 
     job_spec["spec"]["template"]["spec"]["containers"][0]["env"] = to_kube_env(envs)
 
@@ -129,7 +131,9 @@ for i in range(2): #Failed:	#range(200):
             "nEvents": chunkLength[i],
             "muShieldDesign": 9,
             "jName": "baseName",
-            "jNumber": i + 1}
+            "jNumber": i + 1,
+            "AZUSE_INPUT_DATA_URI": AZURE_DATA_URI.format(job_folder),
+            "AZUSE_OUTPUT_DATA_URI": AZURE_DATA_URI.format(job_folder + "/output")}
     job_spec = deepcopy(JOB_SPEC)
     proc = Process(target=run_kube_job, args=(job_spec,
                                               envs,

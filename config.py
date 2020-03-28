@@ -68,6 +68,7 @@ JOB_SPEC = {
                         ]
                     }
                 ],
+                "hostNetwork": "true",
                 "restartPolicy": "Never",
                 "volumes": [
                     {
@@ -78,13 +79,19 @@ JOB_SPEC = {
                             "type": "Directory"
                         }
                     },
+                    # Use this with azcopy
                     {
                         "name": "muonsample",
-                        "hostPath": {
-                            "path": HOST_SAMPLE_DIRECTORY,
-                            "type": "Directory"
-                        }
-                    }
+                        "emptyDir": {}
+                    },
+                    # Use this with mount
+                    # {
+                    #     "name": "muonsample",
+                    #     "hostPath": {
+                    #         "path": HOST_SAMPLE_DIRECTORY,
+                    #         "type": "Directory"
+                    #     }
+                    # }
                 ]
             }
         },
