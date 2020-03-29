@@ -26,7 +26,7 @@ JOB_SPEC = {
                         "image": "busybox",
                     }
                 ],
-                "hostNetwork": "true",
+                "hostNetwork": True,
                 "restartPolicy": "Never",
             }
         },

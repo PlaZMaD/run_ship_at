@@ -63,12 +63,12 @@ JOB_SPEC = {
                             {
                                 "mountPath": DOCKER_SAMPLE_DIRECTORY,
                                 "name": "muonsample",
-                                # "readOnly": "true"
+                                "readOnly": True,
                             }
                         ]
                     }
                 ],
-                "hostNetwork": "true",
+                "hostNetwork": True,
                 "restartPolicy": "Never",
                 "volumes": [
                     # Use this with mount
