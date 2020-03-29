@@ -5,7 +5,7 @@ then
     echo "AZURE_INPUT_DATA_URI is given. Starting downloading data from $AZURE_INPUT_DATA_URI..."
     azcopy cp "$AZURE_INPUT_DATA_URI" "/sample" --recursive
 else
-    echo "$AZURE_INPUT_DATA_URI wasn't given given"
+    echo "$AZURE_INPUT_DATA_URI wasn't given"
 fi
 
 CN=$((fileName*1000))
